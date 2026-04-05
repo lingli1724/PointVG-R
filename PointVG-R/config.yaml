@@ -1,0 +1,118 @@
+# config_grpo_egopoint.yaml
+data:
+  train_files: .../path/to/train_data.jsonl
+  val_files: .../path/to/val_data.jsonl
+  prompt_key: prompt
+  answer_key: ground_truth
+  image_key: images
+  video_key: videos
+  image_dir: null
+
+  max_prompt_length: 2048
+  max_response_length: 256
+  rollout_batch_size: 256
+  val_batch_size: 256
+
+  # 你若不需要额外模板，可先置空；若需要，可提供一个 jinja 仅返回 prompt
+  format_prompt: null
+  override_chat_template: null
+
+  shuffle: true
+  seed: 998244353
+  min_pixels: 262144
+  max_pixels: 4194304
+  filter_overlong_prompts: true
+
+algorithm:
+  adv_estimator: grpo
+  disable_kl: false
+  use_kl_loss: true
+  kl_penalty: low_var_kl
+  kl_coef: 1.0e-2
+  online_filtering: false
+  filter_key: overall
+  filter_low: 0.01
+  filter_high: 0.99
+
+worker:
+  actor:
+    global_batch_size: 128
+    micro_batch_size_per_device_for_update: 8
+    micro_batch_size_per_device_for_experience: 16
+    max_grad_norm: 1.0
+    padding_free: true
+    dynamic_batching: true
+    ulysses_size: 1
+
+    model:
+      model_path: .../path/to/model
+      enable_gradient_checkpointing: true
+      trust_remote_code: false
+      freeze_vision_tower: false
+      lora:
+        rank: 0  # Set to a positive integer to enable LoRA
+        alpha: 16  # LoRA scaling factor
+        target_modules: all-linear  # all-linear or q_proj,k_proj,v_proj,o_proj,gate_proj,up_proj,down_proj
+        exclude_modules: .*visual.*  # Exclude modules from applying LoRA; example: '.*visual.*' for excluding the ViT in Qwen2.5-VL, as vLLM does not support ViT LoRA
+
+    optim:
+      lr: 1.0e-6
+      weight_decay: 1.0e-2
+      strategy: adamw
+      lr_warmup_ratio: 0.0
+
+    fsdp:
+      enable_full_shard: true
+      enable_cpu_offload: false
+      enable_rank0_init: true
+    offload:
+      offload_params: true
+      offload_optimizer: true
+
+  rollout:
+    n: 5
+    temperature: 1.0
+    top_p: 1.0
+    limit_images: 0
+    gpu_memory_utilization: 0.75
+    enforce_eager: false
+    enable_chunked_prefill: false
+    tensor_parallel_size: 1
+    disable_tqdm: false
+    seed: 42
+    val_override_config:
+      temperature: 0.6
+      top_p: 0.95
+      n: 3
+
+  ref:
+    fsdp:
+      enable_full_shard: true
+      enable_cpu_offload: true
+      enable_rank0_init: true
+    offload:
+      offload_params: false
+
+  reward:
+    reward_function: ./PointVG-R/reward_function/reward_func.py:compute_score
+    skip_special_tokens: false
+
+trainer:
+  total_epochs: 3
+  max_steps: null
+  project_name: PointVG-R
+  experiment_name: opensource_exp
+  logger: ["file", "tensorboard"]
+  nnodes: 1
+  n_gpus_per_node: 4
+  max_try_make_batch: 20
+  val_freq: 10
+  val_before_train: true
+  val_only: false
+  val_generations_to_log: 5
+  train_generations_to_log: 5
+  train_generations_log_freq: 1
+  save_freq: 1
+  save_limit: 3
+  save_model_only: false
+  find_last_checkpoint: false
