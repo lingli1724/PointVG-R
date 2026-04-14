@@ -13,7 +13,6 @@ data:
   rollout_batch_size: 256
   val_batch_size: 256
 
-  # 你若不需要额外模板，可先置空；若需要，可提供一个 jinja 仅返回 prompt
   format_prompt: null
   override_chat_template: null
 

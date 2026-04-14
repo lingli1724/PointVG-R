@@ -1,4 +1,4 @@
-# reward func v6, 修改 ray cos score
+# reward func v6, updated ray cosine score
 
 import json
 import math
