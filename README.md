@@ -11,6 +11,7 @@
 <p align="center">
   <a href="#highlights">Highlights</a> ·
   <a href="#pipeline">Pipeline</a> ·
+  <a href="#environment-setup">Environment</a> ·
   <a href="#quick-start">Quick Start</a> ·
   <a href="#data-format">Data Format</a> ·
   <a href="#reward-design">Reward Design</a>
@@ -62,7 +63,7 @@ PointVG-R/
 ├── scripts/
 ├── tests/
 ├── verl/
-└── pyproject.toml
+└── README.md
 ```
 
 Key components:
@@ -72,6 +73,57 @@ Key components:
 - [`PointVG-R/reward_function/reward_func.py`](PointVG-R/reward_function/reward_func.py): custom reward entrypoint `compute_score`
 - [`verl/`](verl): core training framework, including actor, rollout, reward, and trainer modules
 - [`dataset/`](dataset): recommended location for training and validation data
+
+## Environment Setup
+
+We recommend creating a dedicated conda environment named `PointVG-R`.
+
+### 1. Create and activate environment
+
+```bash
+conda create -n PointVG-R python=3.10 -y
+conda activate PointVG-R
+```
+
+Recommended Python version:
+
+- `python==3.10`  (validated locally with `3.10.19`)
+
+### 2. Install required packages
+
+The following versions are the main dependencies validated in our local environment:
+
+- `torch==2.8.0+cu126`
+- `torchvision==0.23.0+cu126`
+- `transformers==4.57.0`
+- `datasets==4.5.0`
+- `ray==2.53.0`
+- `vllm==0.11.0`
+- `tensordict==0.10.0`
+- `pillow==12.1.0`
+- `jinja2==3.1.6`
+- `numpy==2.2.6`
+- `qwen-vl-utils==0.0.14`
+- `tensorboard==2.20.0`
+
+You can install them with `pip`:
+
+```bash
+pip install \
+  torch==2.8.0+cu126 \
+  torchvision==0.23.0+cu126 \
+  transformers==4.57.0 \
+  datasets==4.5.0 \
+  ray==2.53.0 \
+  vllm==0.11.0 \
+  tensordict==0.10.0 \
+  pillow==12.1.0 \
+  jinja2==3.1.6 \
+  numpy==2.2.6 \
+  qwen-vl-utils==0.0.14 \
+  tensorboard==2.20.0
+```
+
 
 ## Quick Start
 
